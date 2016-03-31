@@ -33,7 +33,7 @@ Eshell V5.9.1  (abort with ^G)
 2618.0
 ```
 
-カッコの使用、乗算演算子 "*"、そして除算演算子 "/"、これらは普通の四則演算です([Expressions](http://erlang.org/doc/reference_manual/expressions.html) を参照してください)。
+カッコの使用、乗算演算子 "\*"、そして除算演算子 "/"、これらは普通の四則演算です([Expressions](http://erlang.org/doc/reference_manual/expressions.html) を参照してください)。
 
 Erlang システムと Erlang シェルをシャットダウンするには Control-C を入力します。
 
@@ -119,13 +119,128 @@ fac(N) ->
     N * fac(N - 1).
 ```
 
-これはモジュールで`tut1`と呼ばれ、`fac`という名前の関数を有しており、この関数は1つの引数`N`を取ります。
+なのでこれはモジュールで`tut1`と呼ばれ、`fac`という名前の関数を有しており、この関数は1つの引数`N`を取ります。
 
 最初の部分は、1の階乗は1だということを表しています:
 
 ```erl
 fac(1) ->
     1;
+```
+
+この部分はまだ`fac`の続きがあるということを指し示す";"で終端していることに注意してください。
+
+2番目の部分はNの階乗はNにN-1の階乗が掛けられたものである、ということです。
+
+```erl
+fac(N) ->
+    N * fac(N - 1).
+```
+
+この部分はこの関数にこれ以降の部分がないことを表す"."で終わっていることに気をつけましょう。
+
+ファイルをコンパイルします:
+
+```
+5> c(tut1).
+{ok,tut1}
+```
+
+そして4の階乗を計算してみましょう。
+
+```
+6> tut1:fac(4).
+24
+```
+
+`tut1`モジュールの`fac`関数は引数`4`で呼び出されました。
+
+関数はたくさんの引数を取ることが出来ます。2つの数字を掛け算する関数で`tut1`モジュールを拡張してみましょう:
+
+```erl
+-module(tut1).
+-export([fac/1, mult/2]).
+
+fac(1) ->
+    1;
+fac(N) ->
+    N * fac(N - 1).
+
+mult(X, Y) ->
+    X * Y.
+```
+
+別の2引数関数`mult`があるという情報を`-export`行に追加する必要もあることに気をつけましょう。
+
+コンパイルして:
+
+```
+7> c(tut1).
+{ok,tut1}
+```
+
+新しい関数`mult`を試してみましょう:
+
+```
+8> tut1:mult(3,4).
+12
+```
+
+この例では数値は整数で、`N`、`X`および`Y`というコード内の関数にある引数は変数と呼ばれます。変数は大文字で始めなければなりません([Variables](http://erlang.org/doc/reference_manual/expressions.html)を参照してください)。変数の例は`Number`、`ShoeSize`、そして`Age`です。
+
+## 2.3 アトム
+
+アトムは Erlang におけるもう一つのデータ型です。アトムは小文字から始まります([Atom](http://erlang.org/doc/reference_manual/data_types.html) を参照してください)、例えば: `charles`、`centimeter`、`inch` です。アトムは単純に名前であって、他の何者でもありません。変数のように値を持てるものでもありません。
+
+`tut2.erl` という名前のファイルに次のプログラムを打ち込んでください。インチからセンチメートルに、そしてその逆に変換できたら便利でしょう:
+
+```erl
+-module(tut2).
+-export([convert/2]).
+
+convert(M, inch) ->
+    M / 2.54;
+
+convert(N, centimeter) ->
+    N * 2.54.
+```
+
+コンパイルしましょう:
+
+```
+9> c(tut2).
+{ok,tut2}
+```
+
+テストします:
+
+```
+10> tut2:convert(3, inch).
+1.1811023622047243
+11> tut2:convert(7, centimeter).
+17.78
+```
+
+何の説明もなく小数(浮動小数点数)を導入しました。皆さんならきっと上手く切り抜けられるでしょう。
+
+`centimeter` や `inch` 以外のものが `convert` 関数に入ってきたらどうなるか見てみましょう。
+
+```
+12> tut2:convert(3, miles).
+** exception error: no function clause matching tut2:convert(3,miles) (tut2.erl, line 4)
+```
+
+`convert` 関数の2つの部分は節といいます。ご覧の通り、`miles` は節のどちらの部分でもありません。Erlang システムは節のどちらにも **マッチ** できないので、`function_clause` エラーメッセージが返されます。シェルはエラーメッセージを良い感じに整形しますが、エラーの組はシェルの履歴リストに保存され、`v/1` シェルコマンドによって出力することができます:
+
+```
+13> v(12).
+{'EXIT',{function_clause,[{tut2,convert,
+                                [3,miles],
+                                [{file,"tut2.erl"},{line,4}]},
+                          {erl_eval,do_apply,5,[{file,"erl_eval.erl"},{line,482}]},
+                          {shell,exprs,7,[{file,"shell.erl"},{line,666}]},
+                          {shell,eval_exprs,7,[{file,"shell.erl"},{line,621}]},
+                          {shell,eval_loop,3,[{file,"shell.erl"},{line,606}]}]}}
 ```
 
 (鋭意翻訳中)
