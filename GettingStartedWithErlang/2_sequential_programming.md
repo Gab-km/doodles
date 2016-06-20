@@ -391,4 +391,122 @@ Erlang は文字列データ型を持ちません。代わりに、文字列は�
 "abc"
 ```
 
+## 2.6 マップ
+
+マップはキーから値への関連付けの集合です。これらの関連は "#{" と "}" の中に包まれています。 "key" から値42への関連を作るために、このように書きます:
+
+```text
+> #{ "key" => 42 }.
+#{"key" => 42}
+```
+
+いくつかの興味深い特徴を使った例で、一番深いところに一気に飛び込みましょう。
+
+以下の例は、色とアルファチャンネルの参照に対するマップを使って、どのようにアルファブレンディングを計算するかを示しています。`color.erl` という名前のファイルにコードを入力してみましょう:
+
+```erl
+-module(color).
+
+-export([new/4, blend/2]).
+
+-define(is_channel(V), (is_float(V) andalso V >= 0.0 andalso V =< 1.0)).
+
+new(R,G,B,A) when ?is_channel(R), ?is_channel(G),
+                  ?is_channel(B), ?is_channel(A) ->
+    #{red => R, green => G, blue => B, alpha => A}.
+
+blend(Src,Dst) ->
+    blend(Src,Dst,alpha(Src,Dst)).
+
+blend(Src,Dst,Alpha) when Alpha > 0.0 ->
+    Dst#{
+        red   := red(Src,Dst) / Alpha,
+        green := green(Src,Dst) / Alpha,
+        blue  := blue(Src,Dst) / Alpha,
+        alpha := Alpha
+    };
+blend(_,Dst,_) ->
+    Dst#{
+        red   := 0.0,
+        green := 0.0,
+        blue  := 0.0,
+        alpha := 0.0
+    }.
+
+alpha(#{alpha := SA}, #{alpha := DA}) ->
+    SA + DA*(1.0 - SA).
+
+red(#{red := SV, alpha := SA}, #{red := DV, alpha := DA}) ->
+    SV*SA + DV*DA*(1.0 - SA).
+green(#{green := SV, alpha := SA}, #{green := DV, alpha := DA}) ->
+    SV*SA + DV*DA*(1.0 - SA).
+blue(#{blue := SV, alpha := SA}, #{blue := DV, alpha := DA}) ->
+    SV*SA + DV*DA*(1.0 - SA).
+```
+
+コンパイルしてテストしましょう:
+
+```text
+> c(color).
+{ok,color}
+> C1 = color:new(0.3,0.4,0.5,1.0).
+#{alpha => 1.0,blue => 0.5,green => 0.4,red => 0.3}
+> C2 = color:new(1.0,0.8,0.1,0.3).
+#{alpha => 0.3,blue => 0.1,green => 0.8,red => 1.0}
+> color:blend(C1,C2).
+#{alpha => 1.0,blue => 0.5,green => 0.4,red => 0.3}
+> color:blend(C2,C1).
+#{alpha => 1.0,blue => 0.38,green => 0.52,red => 0.51}
+```
+
+この例はいくつか説明が必要です:
+
+```erl
+-define(is_channel(V), (is_float(V) andalso V >= 0.0 andalso V =< 1.0)).
+```
+
+まず、ガードテストの助けになるように `is_channel` というマクロが定義されています。これはここだけで便利なものであり、構文で溢れかえるのを減らすためのものです。マクロについての詳細は、[The Preprocessor](http://erlang.org/doc/reference_manual/macros.html) を参照してください。
+
+```erl
+new(R,G,B,A) when ?is_channel(R), ?is_channel(G),
+                  ?is_channel(B), ?is_channel(A) ->
+    #{red => R, green => G, blue => B, alpha => A}.
+```
+
+`new/4` 関数は新しいマップのタームを作り、 `red`、 `green`、 `blue`、および `alpha` というキーに初期値を紐付けます。この場合、各引数に対して ?is_channel/1 マクロによって保証された0.0以上1.0以下の浮動小数点数のみが許可され、引数ごとに`?is_channel/1` マクロによって保証されます。新しいマップを作る際、`=>` 演算子のみが許可されます。
+
+`new/4` で作成した色のタームに対して `blend/2` を呼び出すことにより、2つのマップのタームで決定される結果の色を計算することができます。
+
+`blend/2` が行う最初のことは、結果のアルファチャンネルを計算することです:
+
+```erl
+alpha(#{alpha := SA}, #{alpha := DA}) ->
+    SA + DA*(1.0 - SA).
+```
+
+`:=` 演算子を用いることで、両方の引数に対して `alpha` キーに関連付けられた値が取得されます。マップにある他のキーは無視され、`alpha` キーだけが必須となりチェックされます。
+
+これはまた `red/2`、 `blue/2`、 `green/2` 関数の場合でも同様です。
+
+```erl
+red(#{red := SV, alpha := SA}, #{red := DV, alpha := DA}) ->
+    SV*SA + DV*DA*(1.0 - SA).
+```
+
+ここでの違いは、各マップ引数にある2つのキーに対してチェックを行うということです。他のキーは無視されます。
+
+最後に `blend/3` で結果の色を返します:
+
+```erl
+blend(Src,Dst,Alpha) when Alpha > 0.0 ->
+    Dst#{
+        red   := red(Src,Dst) / Alpha,
+        green := green(Src,Dst) / Alpha,
+        blue  := blue(Src,Dst) / Alpha,
+        alpha := Alpha
+    };
+```
+
+新しいチャンネル値で `Dst` マップが更新されます。既存のキーを新しい値で更新するための構文は := 演算子を使います。
+
 (鋭意翻訳中)
