@@ -1,6 +1,6 @@
 # 1 イントロダクション
 
-このセクションはあなたが Erlang を始めるためのクイックスタート・チュートリアルです。このセクションの全ては真ですが、しかし真実の一部でしかありません。例えば、全ての難解な形式ではなく、最もシンプルな形式だけをお見せします。また、 *マニュアル* で示された部分は大部分が簡略化されています。これは、対象についての大変多くの情報が Erlang の書籍や [Erlang リファレンス・マニュアル](http://erlang.org/doc/reference_manual/introduction.html#erlang%20ref%20manual)で見つかることを意味します。
+このセクションはあなたが Erlang を始めるためのクイックスタート・チュートリアルです。このセクションの全ては真ですが、しかし真実の一部でしかありません。例えば、最もシンプルな形式だけをお見せしており、難解な形式ばかりではありません。また、 *マニュアル* で示された部分は大部分が簡略化されています。これは、対象についての大変多くの情報が Erlang の書籍や [Erlang リファレンス・マニュアル](http://erlang.org/doc/reference_manual/introduction.html#erlang%20ref%20manual)で見つかることを意味します。
 
 ## 1.1 前提条件
 
@@ -18,7 +18,7 @@
 * 単方向リンク (モニター)
 * バイナリデータの扱い (バイナリ/ビット用の文法)
 * リスト内包表記
-* 外の世界や別の言語で書かれたソフトウェアと通信する方法 (ポート)。ですが、これは[相互運用チュートリアル](http://erlang.org/doc/tutorial/introduction.html#interoperability%20tutorial)に記載されています
+* 外の世界や別の言語で書かれたソフトウェアと通信する方法 (ポート)。これは[相互運用チュートリアル](http://erlang.org/doc/tutorial/introduction.html#interoperability%20tutorial)に記載されています
 * Erlang ライブラリ(例えばファイル操作)
 * OTP と(その帰結として) Mnesia データベース
 * Erlang ターム用のハッシュテーブル (ETS)
@@ -26,4 +26,4 @@
 
 ----
 
-Copyright (c) 1996-2015 Ericsson AB. All Rights Reserved.
+Copyright (c) 1996-2016 Ericsson AB. All Rights Reserved.

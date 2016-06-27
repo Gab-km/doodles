@@ -1,9 +1,9 @@
 # Erlang 入門
 
-バージョン 7.2
+バージョン 8.0
 
-2015年12月15日
+2016年6月21日
 
 ----
 
-Copyright (c) 1996-2015 Ericsson AB. All Rights Reserved.
+Copyright (c) 1996-2016 Ericsson AB. All Rights Reserved.

@@ -1,4 +1,4 @@
-# 2 順を追ってのプログラミング
+# 2 逐次プログラミング
 
 ## 2.1 Erlang のシェル
 
@@ -509,4 +509,31 @@ blend(Src,Dst,Alpha) when Alpha > 0.0 ->
 
 新しいチャンネル値で `Dst` マップが更新されます。既存のキーを新しい値で更新するための構文は := 演算子を使います。
 
+## 2.7 標準モジュールとマニュアルのページ
+
+Erlang には物事を行うのに便利なたくさんの標準モジュールがあります。例えば、`io` モジュールには整形された入出力を扱うのに便利なたくさんの関数が入っています。標準モジュールについての情報を調べるために、`erl -man` コマンドを OS のシェルやコマンドプロンプト(`erl` を起動したのと同じ場所)で使うことができます。OS のシェルコマンドを試してみましょう:
+
+```text
+% erl -man io
+ERLANG MODULE DEFINITION                                    io(3)
+
+MODULE
+     io - Standard I/O Server Interface Functions
+
+DESCRIPTION
+     This module provides an  interface  to  standard  Erlang  IO
+     servers. The output functions all return ok if they are suc-
+     ...
+```
+
+もしお使いのシステムで上手く動作しない場合、ドキュメントが Erlang/OTP のリリース版に HTML として含まれています。www.erlang.se (商用 Erlang) や www.erlang.org (オープンソース) のいずれからでも、ドキュメントを HTML として読んだり PDF としてダウンロードしたりすることができます。例えば R9B リリースですと次のようになります:
+
+```text
+http://www.erlang.org/doc/r9b/doc/index.html
+```
+
 (鋭意翻訳中)
+
+----
+
+Copyright (c) 1996-2016 Ericsson AB. All Rights Reserved.
