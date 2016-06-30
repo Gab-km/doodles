@@ -532,6 +532,27 @@ DESCRIPTION
 http://www.erlang.org/doc/r9b/doc/index.html
 ```
 
+## 2.8 ターミナルへの出力を書く
+
+例の中で整形して出力できるといいので、次の例は `io:format` 関数を使うシンプルな方法をお見せします。エクスポートされた他のすべての関数のように、`io:format` 関数をシェル上でテストすることができます:
+
+```text
+31> io:format("hello world~n", []).
+hello world
+ok
+32> io:format("this outputs one Erlang term: ~w~n", [hello]).
+this outputs one Erlang term: hello
+ok
+33> io:format("this outputs two Erlang terms: ~w~w~n", [hello, world]).
+this outputs two Erlang terms: helloworld
+ok
+34> io:format("this outputs two Erlang terms: ~w ~w~n", [hello, world]).
+this outputs two Erlang terms: hello world
+ok
+```
+
+`format/2` (つまり、2引数の `format`)関数は、2つのリストを取ります。最初のものは、ほぼ必ず" "の間に書かれたリストです。このリストは、各 ~w が2番目のリストから順番通りに取得されたタームによって置き換えられるのを除いて、書いたとおりに印字されます。~n はそれぞれ改行に置き換わります。すべてが計画通りに進んだ場合、`io:format/2` 関数自身は `ok` アトムを返します。Erlang の他の関数のように、エラーが発生した場合はクラッシュします。これは Erlang においては失敗ではなく、よく考慮された上でのポリシーなのです。Erlang は後ほど目にするエラーを扱う洗練されたメカニズムを持ちます。練習として、`io:format` をクラッシュさせてみましょう、難しくはないはずです。ですが、`io:format` がクラッシュしても、Erlang シェル自身はクラッシュしないことが分かります。
+
 (鋭意翻訳中)
 
 ----
