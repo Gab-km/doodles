@@ -553,6 +553,57 @@ ok
 
 `format/2` (つまり、2引数の `format`)関数は、2つのリストを取ります。最初のものは、ほぼ必ず" "の間に書かれたリストです。このリストは、各 ~w が2番目のリストから順番通りに取得されたタームによって置き換えられるのを除いて、書いたとおりに印字されます。~n はそれぞれ改行に置き換わります。すべてが計画通りに進んだ場合、`io:format/2` 関数自身は `ok` アトムを返します。Erlang の他の関数のように、エラーが発生した場合はクラッシュします。これは Erlang においては失敗ではなく、よく考慮された上でのポリシーなのです。Erlang は後ほど目にするエラーを扱う洗練されたメカニズムを持ちます。練習として、`io:format` をクラッシュさせてみましょう、難しくはないはずです。ですが、`io:format` がクラッシュしても、Erlang シェル自身はクラッシュしないことが分かります。
 
+## 2.9 大きめの例
+
+さぁ、これまで私たちが学んできたことを足固めするための大きな例です。世界中のたくさんの都市から得た、測定した気温のリストがあるとしましょう。(先のリストにおいて)あるものはセ氏で、またあるものはカ氏です。まずは全部セ氏に変換し、それからデータを見やすく出力してみましょう。
+
+```erl
+%% This module is in file tut5.erl
+
+-module(tut5).
+-export([format_temps/1]).
+
+%% Only this function is exported
+format_temps([])->                        % No output for an empty list
+    ok;
+format_temps([City | Rest]) ->
+    print_temp(convert_to_celsius(City)),
+    format_temps(Rest).
+
+convert_to_celsius({Name, {c, Temp}}) ->  % No conversion needed
+    {Name, {c, Temp}};
+convert_to_celsius({Name, {f, Temp}}) ->  % Do the conversion
+    {Name, {c, (Temp - 32) * 5 / 9}}.
+
+print_temp({Name, {c, Temp}}) ->
+    io:format("~-15w ~w c~n", [Name, Temp]).
+```
+
+```text
+35> c(tut5).
+{ok,tut5}
+36> tut5:format_temps([{moscow, {c, -10}}, {cape_town, {f, 70}},
+{stockholm, {c, -4}}, {paris, {f, 28}}, {london, {f, 36}}]).
+moscow          -10 c
+cape_town       21.11111111111111 c
+stockholm       -4 c
+paris           -2.2222222222222223 c
+london          2.2222222222222223 c
+ok
+```
+
+このプログラムがどのように動作するかを見る前に、コードに幾つかコメントを追加したことに注目してください。コメントは % 文字から始まり行末まで続きます。`-export([format_temps/1]).` の行は `format_temps/1` 関数のみインクルードしています。他の関数は**ローカル**関数、つまり `tut5` モジュールの外からは見えない、ということについても知っておいてください。
+
+シェルからこのプログラムをテストしている時、行が長すぎたので入力を2行に広げなければならなかったこともお知らせしておきます。
+
+初めて `format_temps` を呼び出す時、`City` は値 `{moscow,{c,-10}}` を得て、`Rest` はリストの残りになります。なので `print_temp(convert_to_celsius({moscow,{c,-10}}))` 関数が呼ばれます。
+
+ここに`convert_to_celsius({moscow,{c,-10}})` を`print_temp` 関数の引数にするという関数呼び出しがあります。このように関数呼び出しが**ネスト**している時、内側から順に処理(評価)します。つまり、最初に `convert_to_celsius({moscow,{c,-10}})` を評価しますが、この関数は気温が既にセ氏である値 `{moscow,{c,-10}}` が与えられています。それから `print_temp({moscow,{c,-10}})` を評価します。`convert_to_celsius` 関数は以前の例にある `convert_length` 関数と似た動作をします。
+
+`print_temp` は上で述べてきたのと似たような方法で `io:format` を単純に呼び出します。~-15w はフィールドの長さ(幅)を15として左寄せで「ターム」を出力する、という意味です。(STDLIBにあるマニュアルページ[io(3)](http://erlang.org/doc/man/io.html#fwrite-1)を参照してください)
+
+いよいよ引数としてリストの残りと一緒に `format_temps(Rest)` が呼び出されます。この方法は他の言語におけるループ構造と似たようなものです。(えぇ、これは再帰です、でも心配しないで)。ですから同じ `format_temps` 関数が再度呼ばれ、今回 `City` は値 `{cape_town,{f,70}}` を受け取り、前と同じ手続きを繰り返します。これをリストが空、つまり [] になるまで続けますが、これは最初の節である `format_temps([])` にマッチします。これは単にアトム `ok` を返す(という結果で終わる)ので、プログラムは終了します。
+
 (鋭意翻訳中)
 
 ----
